@@ -203,7 +203,6 @@ void sortDataList(list<Data *> &l) {
     // Remove dashes
     for (int i = 0; i < size_list; ++i) {
       string& s = (a[i])->ssn;
-      int length = s.length();
       for (int j = 0; j < s.length(); ++j) {
 	if (s[j] == '-') {
 	  s.erase(j, 1);
@@ -271,6 +270,10 @@ void sortDataList(list<Data *> &l) {
   
   //  sort(a.begin(), a.end() - diff, less_than);
 
+
+
+
+  
   // Copy back to list
   it_copy = l.begin();
   for (int i = 0; i < size_list; ++i, ++it_copy) {
@@ -530,24 +533,24 @@ void selection_sort(int size) {
 
 const int PASSES = 2;
 const int VALUE_RANGE = 32000;
-const int PER_BIN = 2 * (1000000 / VALUE_RANGE);
+const int PER_BIN = 2.5 * (1010001 / VALUE_RANGE); //////////////////////// Possible cause of the error
 Data* bins[VALUE_RANGE][PER_BIN] = {{NULL}};
 
 void lsd_radix_sort(int n) {
-
   for (int div_by_range = 0; div_by_range < PASSES; ++div_by_range) {
     for (int i = 0; i < n; ++i) {
       ///////////////////////////////////// Try to do string->int conversion just one time ///////////////////
       istringstream iss(a[i]->ssn);
       int value = 0;
       iss >> value;
-      int temp_value = value / pow(VALUE_RANGE, div_by_range);
+      int temp_value = (!div_by_range ? value : (value / VALUE_RANGE));
+      //      int temp_value = value / pow(VALUE_RANGE, div_by_range); /////////////////////////// pow returning double here might be the issue
       int index = temp_value % VALUE_RANGE;
       int j = 0;
       for (; bins[index][j] != NULL; ++j) {
 	;
       }
-      bins[index][j] = a[i];
+      bins[index][j] = a[i]; ////////////////////////// Maybe just store the numbers
     }
     int k = 0;
     for (int i = 0; i < VALUE_RANGE; ++i) {
