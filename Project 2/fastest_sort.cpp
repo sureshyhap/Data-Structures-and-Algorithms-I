@@ -142,6 +142,7 @@ bool less_than(Data* d1, Data* d2) {
   return *d1 < *d2;
 }
 
+// Array that will hold a copy of the list's Data*
 vector<Data*> a(1010001, NULL);
 
 const int SORT_BASE = 20;
@@ -177,10 +178,8 @@ void sortDataList(list<Data *> &l) {
   // If none of the above test cases, must be T2
   if (!test_case) {
     test_case = 2;
-  }
-  
-  //  l.sort(less_than);
-
+  }  
+  //  l.sort(less_than); ///////////////////////////////////////////////
   int size_list = l.size();
   int size_vec = a.size();
   int diff = size_vec - size_list;
@@ -189,7 +188,6 @@ void sortDataList(list<Data *> &l) {
   for (int i = 0; i < size_list; ++i, ++it_copy) {
     a[i] = *it_copy;
   }
-
   if (test_case == 1) { 
     merge_sort(0, size_list);
   }
@@ -262,18 +260,11 @@ void sortDataList(list<Data *> &l) {
 	  s_temp3.insert(0, "0");
 	}
       }
-      (*it)->ssn = s_temp3 + "-" + s_temp2 + "-" + s_temp1;
-    
+      (*it)->ssn = s_temp3 + "-" + s_temp2 + "-" + s_temp1;    
     }
     */    
-  }
-  
-  //  sort(a.begin(), a.end() - diff, less_than);
-
-
-
-
-  
+} 
+  //  sort(a.begin(), a.end() - diff, less_than); 
   // Copy back to list
   it_copy = l.begin();
   for (int i = 0; i < size_list; ++i, ++it_copy) {
@@ -287,7 +278,6 @@ void quick_sort(int start, int size) {
     insertion_sort(start, size);
     return;
   }
-  // int pivot = a[start + size - 1];
   // Median-of-three partitioning
   int left = start;
   int right = start + size - 1;
@@ -393,12 +383,6 @@ void merge_sort(int start, int size, int sorting_by) {
     insertion_sort(start, size, sorting_by);
     return;
   }  
-  /*
-    if (size == 1) {
-    return;
-    }
-  */
-
   // Dividing the problem into halves
   merge_sort(start, size / 2, sorting_by);
   merge_sort(start + (size / 2), size - (size / 2), sorting_by);
@@ -459,6 +443,7 @@ void merge_sort(int start, int size, int sorting_by) {
       }            
     }
   }
+  // The left segment has been exhausted
   if (i == start + (size / 2)) {
     while (j < start + size) {
       b[k] = a[j];
@@ -466,6 +451,7 @@ void merge_sort(int start, int size, int sorting_by) {
       ++k;
     }
   }
+ // The right segment has been exhausted
   else if (j == start + size) {
     while (i < start + (size / 2)) {
       b[k] = a[i];
@@ -473,7 +459,6 @@ void merge_sort(int start, int size, int sorting_by) {
       ++k;
     }
   }
-  
   for (int count = 0; count < size; ++count) {
     a[start + count] = b[count];
   }
@@ -533,7 +518,7 @@ void selection_sort(int size) {
 
 const int PASSES = 2;
 const int VALUE_RANGE = 32000;
-const int PER_BIN = 2.5 * (1010001 / VALUE_RANGE); //////////////////////// Possible cause of the error
+const int PER_BIN = 2.5 * (1010001 / VALUE_RANGE);
 Data* bins[VALUE_RANGE][PER_BIN] = {{NULL}};
 
 void lsd_radix_sort(int n) {
@@ -544,7 +529,7 @@ void lsd_radix_sort(int n) {
       int value = 0;
       iss >> value;
       int temp_value = (!div_by_range ? value : (value / VALUE_RANGE));
-      //      int temp_value = value / pow(VALUE_RANGE, div_by_range); /////////////////////////// pow returning double here might be the issue
+      //      int temp_value = value / pow(VALUE_RANGE, div_by_range);
       int index = temp_value % VALUE_RANGE;
       int j = 0;
       for (; bins[index][j] != NULL; ++j) {
@@ -560,7 +545,6 @@ void lsd_radix_sort(int n) {
 	}
 	a[k++] = bins[i][j];
 	bins[i][j] = NULL;
-	
       }
     }
   }
