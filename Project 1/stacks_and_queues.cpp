@@ -31,6 +31,7 @@ public:
   virtual ~SimpleList();
   // Retrieves name of SimpleList
   inline std::string get_name() const;
+  // Retrieves size of SimpleList
   inline int get_size() const;
   // Pure virtual push to be implemented
   // in derived classes
