@@ -12,10 +12,10 @@ public:
   void push(const T& element);
   inline void pop();
   inline T top();
-  inline bool is_empty();
+  inline bool is_empty() const;
   inline int get_size() const;
   inline int get_cap() const;
-  void print();
+  void print() const;
 private:
   T* data;
   int size, capacity;
@@ -99,7 +99,7 @@ inline T Stack<T>::top() {
       throw std::runtime_error("Empty stack");
     }
   }
-  catch(const std::runtime_error& err) {
+  catch (const std::runtime_error& err) {
     std::cerr << err.what() << '\n';
     // Returns default value of given type
     return T();
@@ -107,7 +107,7 @@ inline T Stack<T>::top() {
 }
 
 template <typename T>
-inline bool Stack<T>::is_empty() {
+inline bool Stack<T>::is_empty() const {
   return not size;
 }
 
@@ -122,7 +122,7 @@ inline int Stack<T>::get_cap() const {
 }
 
 template <typename T>
-void Stack<T>::print() {
+void Stack<T>::print() const {
   std::cout << '\n' << *this << '\n';
 }
 
