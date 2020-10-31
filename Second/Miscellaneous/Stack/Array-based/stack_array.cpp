@@ -70,11 +70,7 @@ void Stack<T>::push(const T& element) {
     capacity *= 2;
     delete [] data;
     data = {nullptr};
-    data = {new T[capacity]};
-    for (int i {0}; i < size; ++i) {
-      data[i] = {temp[i]};
-    }
-    delete [] temp;
+    data = temp;
   }
   // At this point capacity is sufficient to hold more elements
   data[size++] = {element};
@@ -132,7 +128,7 @@ int main(int argc, char* argv[]) {
   s.print();
   s.pop();
   s.top();
-  std::cout << s.is_empty();
+  std::cout << s.is_empty() << std::endl;
   s.push(5);
   std::cout << s.get_size() << ' ' << s.get_cap() << '\n';
   s.print();
