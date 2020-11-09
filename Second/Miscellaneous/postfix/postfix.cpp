@@ -18,34 +18,54 @@ double eval_postfix(std::string expression) {
   std::istringstream iss(expression);
   std::string oper;
   while (iss >> oper) {
-    if (oper == "+" or oper == "-" or oper == "*" or oper == "/") {
-      double second_operand = {values.top()};
-      values.pop();
-      double first_operand = {values.top()};
-      values.pop();
-      double result = {};
-      switch (oper.at(0)) {
-      case '+':
-	result = {first_operand + second_operand};
-	break;
-      case '-':
-	result = {first_operand - second_operand};
-	break;
-      case '*':
-	result = {first_operand * second_operand};
-	break;
-      case '/':
-	result = {first_operand / second_operand};
-	break;
+    try {
+      if (oper == "+" or oper == "-" or oper == "*" or oper == "/") {
+	if (values.size() < 2) {
+	  throw std::runtime_error("Unbalanced expression.");
+	}
+	double second_operand = {values.top()};
+	values.pop();
+	double first_operand = {values.top()};
+	values.pop();
+	double result = {};
+	switch (oper.at(0)) {
+	case '+':
+	  result = {first_operand + second_operand};
+	  break;
+	case '-':
+	  result = {first_operand - second_operand};
+	  break;
+	case '*':
+	  result = {first_operand * second_operand};
+	  break;
+	case '/':
+	  result = {first_operand / second_operand};
+	  break;
+	}
+	values.push(result);
       }
-      values.push(result);
+      else {
+	std::istringstream num(oper);
+	double value = {};
+	num >> value;
+	values.push(value);
+      }
+    }
+    catch (const std::runtime_error& re) {
+      std::cerr << re.what() << '\n';
+      return 0;
+    }
+  }
+  try {
+    if (values.size() == 1) {
+      return values.top();
     }
     else {
-      std::istringstream num(oper);
-      double value = {};
-      num >> value;
-      values.push(value);
+      throw std::runtime_error("Unbalanced expression.");
     }
-  }    
-  return values.top();
+  }
+  catch (const std::runtime_error& re) {
+    std::cerr << re.what() << '\n';
+    return 0;
+  }
 }
