@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
 
 template <typename T>
 void quick_sort(typename std::vector<T>& lyst, int start, int end) {
-  static int insertion_cutoff = 3;
+  static int insertion_cutoff = {3};
  beginning:
   if (end - start < insertion_cutoff) {
     return insertion_sort(lyst, start, end);
