@@ -12,13 +12,16 @@ inline void swap(T& first, T& second);
 
 int main(int argc, char* argv[]) {
   std::vector<int> v = {5, 1, 2, 4, 3, 5, 2, 1, 7, 3, 3, 8, 7, 6, 9};
-  std::cout << quick_select(v2, 0, v.size() - 1, 7);
+  std::cout << quick_select(v, 0, v.size() - 1, 5);
   return 0;
 }
 
 template <typename T>
 T quick_select(std::vector<T>& v, int left, int right, int k) {
  beginning:
+  if (left == right) {
+    return v.at(left);
+  }
   T pivot = {v.at(k)};
   swap(v.at(k), v.at(right));
   int i = {left - 1}, j = {right};
