@@ -5,9 +5,6 @@ template <typename T>
 T quick_select(std::vector<T>& v, int left, int right, int k);
 
 template <typename T>
-int median_of_three(std::vector<T>& lyst, int start, int end);
-
-template <typename T>
 inline void swap(T& first, T& second);
 
 int main(int argc, char* argv[]) {
@@ -50,22 +47,6 @@ T quick_select(std::vector<T>& v, int left, int right, int k) {
     right = {i - 1};
     goto beginning;
   }
-}
-
-template <typename T>
-int median_of_three(std::vector<T>& lyst, int start, int end) {
-  int mid_index = {(start + end) / 2};
-  int& s = lyst.at(start), & m = lyst.at(mid_index), & e = lyst.at(end);
-  if (s > m) {
-    swap(s, m);
-  }
-  if (m > e) {
-    swap(m, e);
-  }
-  if (s > m) {
-    swap(s, m);
-  }
-  return mid_index;
 }
 
 template <typename T>
