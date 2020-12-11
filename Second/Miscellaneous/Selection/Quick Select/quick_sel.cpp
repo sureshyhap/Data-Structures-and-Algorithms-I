@@ -9,7 +9,7 @@ inline void swap(T& first, T& second);
 
 int main(int argc, char* argv[]) {
   std::vector<int> v = {5, 1, 2, 4, 3, 5, 2, 1, 7, 3, 3, 8, 7, 6, 9};
-  std::cout << quick_select(v, 0, v.size() - 1, 5);
+  std::cout << quick_select(v, 0, v.size() - 1, 3);
   return 0;
 }
 
