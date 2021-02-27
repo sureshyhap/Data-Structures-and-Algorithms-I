@@ -4,7 +4,10 @@
 int solve_MSSP(const std::vector<int>& numbers, int i, int j, int& start, int& end);
 
 int main(int argc, char* argv[]) {
-  std::vector<int> nums{-10, 15, -10, 20, -50, 25, 10, -30, 15, -10, 40, -30, 20, -10, 5, -35, 20, -10, 15, -5};
+  //  std::vector<int> nums{-10, 15, -10, 20, -50, 25, 10, -30, 15, -10, 40, -30, 20, -10, 5, -35, 20, -10, 15, -5};
+  std::vector<int> nums{-10, 15, -10, 20, -50, 25, 10, -30, 15, -10, 40, -30, 20, -10, 5, -35, 20, -10, 15, -5, -10, -20, -30};
+  //  std::vector<int> nums{-10, -15, -10, -20, -50, 25, -10, -30, -15, -10, -40, -30, -20, -10, -5, -35, 20, -10, -15, -5};
+  //  std::vector<int> nums{-10, -15, -10, -20, -50, 25, -10, -30, -15, -10, -40, -30, -20, -10, -5, -35, -20, -10, -15, -5};
   int start {-1}, end {-1};
   int solution {solve_MSSP(nums, 0, nums.size() - 1, start, end)};
   std::cout << solution << '\n';
