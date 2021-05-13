@@ -118,7 +118,7 @@ const int MAX_SSN = 999999999;
 // For all of the array-based sorts
 std::vector<Data*> v(1020000, NULL);
 // For counting sort
-std::vector<bool> nums(MAX_SSN + 1, false);
+std::vector<bool> nums(MAX_SSN + 1, 0);
 
 inline void swap(Data*& first, Data*& second);
 void selection_sort();
@@ -130,9 +130,9 @@ void quick_sort(int start, int end);
 void quick_sort();
 void merge_sort(std::vector<Data*>& temp, int start, int end);
 void merge_sort();
-int string_to_int(std::string ssn);
-std::string int_to_string(int ssn);
-void counting_sort();
+inline int string_to_int(std::string ssn);
+inline std::string int_to_string(int ssn);
+void counting_sort(std::list<Data*>& l);
 bool names_less_or_eq(const Data& d1, const Data& d2);
 bool operator<(const Data& d1, const Data& d2);
 bool less_than(Data* pd1, Data* pd2);
@@ -307,7 +307,7 @@ void merge_sort() {
   merge_sort(temp, 0, size - 1);
 }
 
-int string_to_int(std::string ssn) {
+inline int string_to_int(std::string ssn) {
   // Removing the dashes
   ssn.erase(3, 1);
   ssn.erase(5, 1);
@@ -318,7 +318,7 @@ int string_to_int(std::string ssn) {
   return equiv_num;
 }
 
-std::string int_to_string(int ssn) {
+inline std::string int_to_string(int ssn) {
   // Convert to string
   std::ostringstream oss;
   oss << ssn;
@@ -334,18 +334,28 @@ std::string int_to_string(int ssn) {
   return s;
 }
 
-void counting_sort() {
+void counting_sort(std::list<Data*>& l) {
   int ssn = {};
-  for (auto elem : v) {
-    ssn = string_to_int(elem->ssn);
-    nums[ssn] = true;
+  for (std::list<Data*>::const_iterator cit = l.begin();
+       cit != l.end(); ++cit) {
+    ssn = string_to_int((*cit)->ssn);
+    nums[ssn] = 1;
   }
+  /*
+  int size = v.size();
+  for (int j = 0; j < size; ++j) {
+    ssn = string_to_int(v[j]->ssn);
+    nums[ssn] = 1;
+    }*/
   int i = 0;
   std::string ssn_str;
   for (int bucket = 0; bucket <= MAX_SSN; ++bucket) {
     if (nums[bucket]) {
+
+      /*
       ssn_str = int_to_string(bucket);
       v[i++]->ssn = ssn_str;
+      */
     }
   }
 }
@@ -467,7 +477,7 @@ void sortDataList(std::list<Data*>& l) {
     //    std::sort(v.begin(), v.end(), less_than);
     //    quick_sort();
     //    merge_sort();
-    counting_sort();
+    counting_sort(l);
     break;
   }
   l.assign(v.begin(), v.end());
