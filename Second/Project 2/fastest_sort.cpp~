@@ -115,16 +115,58 @@ const int T1_CUTOFF = 102000;
 
 std::vector<Data*> v(1020000, NULL);
 
+inline void swap(Data*& first, Data*& second);
+void selection_sort();
+void bubble_sort();
 bool names_less_or_eq(const Data& d1, const Data& d2);
 bool operator<(const Data& d1, const Data& d2);
 bool less_than(Data* pd1, Data* pd2);
 int detect_case(const std::list<Data*>& l);
 
-template <typename T>
-inline void swap(T& first, T& second) {
-  T temp = first;
+inline void swap(Data*& first, Data*& second) {
+  Data* temp = first;
   first = second;
   second = temp;
+}
+
+void selection_sort() {
+  int size = v.size();
+  if (!size or size == 1) {
+    return;
+  }
+  Data* min = {};
+  for (int i = 0; i < size; ++i) {
+    min = v[i];
+    int min_index = i;
+    for (int j = i + 1; j < size; ++j) {
+      if (*v[j] < *min) {
+	min = v[j];
+	min_index = j;
+      }
+    }
+    swap(v[i], v[min_index]);
+  }
+}
+
+void bubble_sort() {
+  int size = v.size();
+  bool swapped = false;
+  for (int i = 0; i < size - 1; ++i) {
+    for (int j = 0; j < size - 1 - i; ++j) {
+      if (*v[j + 1] < *v[j]) {
+	swap(v[j], v[j + 1]);
+	swapped = true;
+      }
+    }
+    // No swaps on a pass through the elements
+    // means it is sorted already
+    if (!swapped) {
+      return;
+    }
+    else {
+      swapped = false;
+    }
+  }
 }
 
 bool names_less_or_eq(const Data& d1, const Data& d2) {
@@ -221,6 +263,7 @@ void sortDataList(std::list<Data*>& l) {
   case 1:
     //    l.sort(less_than);
     //    std::sort(v.begin(), v.end(), less_than);
+    bubble_sort();
     break;
   case 2:
     //    l.sort(less_than);

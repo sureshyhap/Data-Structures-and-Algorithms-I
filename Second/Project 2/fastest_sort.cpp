@@ -112,12 +112,26 @@ int main() {
 // class defintions here if you wish.
 
 const int T1_CUTOFF = 102000;
+const int INSERTION_SORT_CUTOFF = 20;
+const int MAX_SSN = 999999999;
 
+// For all of the array-based sorts
 std::vector<Data*> v(1020000, NULL);
+// For counting sort
+std::vector<bool> nums(MAX_SSN + 1, false);
 
 inline void swap(Data*& first, Data*& second);
 void selection_sort();
 void bubble_sort();
+void insertion_sort();
+void insertion_sort_for_nlogn(int start, int end);
+int median_of_three(int start, int end);
+void quick_sort(int start, int end);
+void quick_sort();
+void merge_sort(std::vector<Data*>& temp, int start, int end);
+void merge_sort();
+int string_to_int(std::string ssn);
+std::string int_to_string(int ssn);
 bool names_less_or_eq(const Data& d1, const Data& d2);
 bool operator<(const Data& d1, const Data& d2);
 bool less_than(Data* pd1, Data* pd2);
@@ -150,6 +164,7 @@ void selection_sort() {
 
 void bubble_sort() {
   int size = v.size();
+  //  std::cout << size << std::endl;
   bool swapped = false;
   for (int i = 0; i < size - 1; ++i) {
     for (int j = 0; j < size - 1 - i; ++j) {
@@ -165,6 +180,171 @@ void bubble_sort() {
     }
     else {
       swapped = false;
+    }
+  }
+}
+
+void insertion_sort() {
+  int size = v.size();
+  Data* present_element = {};
+  int new_spot = {};
+  for (int i = 1; i < size; ++i) {
+    present_element = v[i];
+    for (int j = i - 1; j >= 0; --j) {
+      if (*present_element < *v[j]) {
+	v[j + 1] = v[j];
+	if (!j) {
+	  new_spot = 0;
+	}
+      }
+      else {
+	new_spot = j + 1;
+	break;
+      }
+    }
+    v[new_spot] = present_element;
+  }
+}
+
+void insertion_sort_for_nlogn(int start, int end) {
+  Data* present_element = {};
+  int new_spot = {};
+  for (int i = start + 1; i <= end; ++i) {
+    present_element = v[i];
+    for (int j = i - 1; j >= start; --j) {
+      if (*present_element < *v[j]) {
+	v[j + 1] = v[j];
+	if (j == start) {
+	  new_spot = start;
+	}
+      }
+      else {
+	new_spot = j + 1;
+	break;
+      }
+    }
+    v[new_spot] = present_element;
+  }
+}
+
+int median_of_three(int start, int end) {
+  int mid = (start + end) / 2;
+  if (*v[mid] < *v[start]) {
+    swap(v[mid], v[start]);
+  }
+  if (*v[end] < *v[mid]) {
+    swap(v[end], v[mid]);
+  }
+  if (*v[mid] < *v[start]) {
+    swap(v[mid], v[start]);
+  }
+  return mid;
+}
+
+void quick_sort(int start, int end) {
+ beginning:
+  if (end - start <= INSERTION_SORT_CUTOFF) {
+    insertion_sort_for_nlogn(start, end);
+    return;
+  }
+  int mid = median_of_three(start, end);
+  swap(v[mid], v[end - 1]);
+  int i = start, j = end - 1;
+  while (i < j) {
+    while (*v[++i] < *v[end - 1]) {
+      ;
+    }
+    while (*v[end - 1] < *v[--j] and j > i) {
+      ;
+    }
+    if (i < j) {
+      swap(v[i], v[j]);
+    }
+  }
+  swap(v[i], v[end - 1]);
+  quick_sort(start, i - 1);
+  start = i + 1;
+  goto beginning;
+}
+
+void quick_sort() {
+  int size = v.size();
+  quick_sort(0, size - 1);
+}
+
+void merge_sort(std::vector<Data*>& temp, int start, int end) {
+  if (end - start <= INSERTION_SORT_CUTOFF) {
+    insertion_sort_for_nlogn(start, end);
+    return;
+  }
+  int mid = (start + end) / 2;
+  merge_sort(temp, start, mid);
+  merge_sort(temp, mid + 1, end);
+  int i = start, j = mid + 1, k = start;
+  while (i <= mid and j <= end) {
+    if (*v[j] < *v[i]) {
+      temp[k++] = v[j++];
+    }
+    else {
+      temp[k++] = v[i++];
+    }
+  }
+  while (j <= end) {
+    temp[k++] = v[j++];
+  }
+  while (i <= mid) {
+    temp[k++] = v[i++];
+  }
+  for (int a = start; a <= end; ++a) {
+    v[a] = temp[a];
+  }
+}
+
+void merge_sort() {
+  int size = v.size();
+  std::vector<Data*> temp(size);
+  merge_sort(temp, 0, size - 1);
+}
+
+int string_to_int(std::string ssn) {
+  // Removing the dashes
+  ssn.erase(3, 1);
+  ssn.erase(5, 1);
+  // Convert to int
+  std::istringstream iss(ssn);
+  int equiv_num = {};
+  iss >> equiv_num;
+  return equiv_num;
+}
+
+std::string int_to_string(int ssn) {
+  // Convert to string
+  std::ostringstream oss;
+  oss << ssn;
+  std::string s = oss.str();
+  int length = s.length();
+  // 9 is the length of a ssn without dashes
+  for (int i = 0; i < 9 - length; ++i) {
+    s.insert(0, "0");
+  }
+  // Insert dashes
+  s.insert(3, "-");
+  s.insert(6, "-");
+  return s;
+}
+
+void counting_sort() {
+  int ssn = {};
+  for (auto elem : v) {
+    ssn = string_to_int(elem->ssn);
+    nums[ssn] = true;
+  }
+  int i = 0;
+  std::string ssn_str;
+  for (int bucket = 0; bucket <= MAX_SSN; ++bucket) {
+    if (nums[bucket]) {
+      ssn_str = int_to_string(bucket);
+      v[i++]->ssn = ssn_str;
     }
   }
 }
@@ -263,19 +443,30 @@ void sortDataList(std::list<Data*>& l) {
   case 1:
     //    l.sort(less_than);
     //    std::sort(v.begin(), v.end(), less_than);
-    bubble_sort();
+    quick_sort();
+    //    merge_sort();
     break;
   case 2:
     //    l.sort(less_than);
     //    std::sort(v.begin(), v.end(), less_than);
+    quick_sort();
+    //    merge_sort();
     break;
   case 3:
     //    l.sort(less_than);
+    //    std::sort(v.begin(), v.end(), less_than);
     //    std::stable_sort(v.begin(), v.end(), less_than);
+    //    bubble_sort();
+    insertion_sort();
+    //    quick_sort();
+    //    merge_sort();
     break;
   case 4:
     //    l.sort(less_than);
     //    std::sort(v.begin(), v.end(), less_than);
+    //    quick_sort();
+    //    merge_sort();
+    counting_sort();
     break;
   }
   l.assign(v.begin(), v.end());
