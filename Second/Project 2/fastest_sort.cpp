@@ -113,27 +113,30 @@ int main() {
 
 const int T1_CUTOFF = 102000;
 const int INSERTION_SORT_CUTOFF = 20;
+// For counting and lsd radix sort
 const int MAX_SSN = 999999999;
 
 // For all of the array-based sorts
-//std::vector<Data*> v(1020000, NULL);
+////////////////std::vector<Data*> v(1020000, NULL);
+Data* v[1020000] = {NULL};
 
 // For counting sort
-std::vector<bool> nums(MAX_SSN + 1, false);
+////////////////std::vector<bool> nums(MAX_SSN + 1, false);
+bool nums[MAX_SSN + 1] = {false};
 
 inline void swap(Data*& first, Data*& second);
-void selection_sort();
-void bubble_sort();
-void insertion_sort();
+void selection_sort(int size);
+void bubble_sort(int size);
+void insertion_sort(int size);
 void insertion_sort_for_nlogn(int start, int end);
 int median_of_three(int start, int end);
 void quick_sort(int start, int end);
-void quick_sort();
+void quick_sort(int size);
 void merge_sort(std::vector<Data*>& temp, int start, int end);
-void merge_sort();
+void merge_sort(int size);
 int string_to_int(std::string ssn);
 std::string int_to_string(int ssn);
-void counting_sort();
+void counting_sort(int size);
 bool names_less_or_eq(const Data& d1, const Data& d2);
 bool operator<(const Data& d1, const Data& d2);
 bool less_than(Data* pd1, Data* pd2);
@@ -145,8 +148,7 @@ inline void swap(Data*& first, Data*& second) {
   second = temp;
 }
 
-void selection_sort() {
-  int size = v.size();
+void selection_sort(int size) {
   if (!size or size == 1) {
     return;
   }
@@ -164,8 +166,7 @@ void selection_sort() {
   }
 }
 
-void bubble_sort() {
-  int size = v.size();
+void bubble_sort(int size) {
   //  std::cout << size << std::endl;
   bool swapped = false;
   for (int i = 0; i < size - 1; ++i) {
@@ -186,8 +187,7 @@ void bubble_sort() {
   }
 }
 
-void insertion_sort() {
-  int size = v.size();
+void insertion_sort(int size) {
   Data* present_element = {};
   int new_spot = {};
   for (int i = 1; i < size; ++i) {
@@ -269,8 +269,7 @@ void quick_sort(int start, int end) {
   goto beginning;
 }
 
-void quick_sort() {
-  int size = v.size();
+void quick_sort(int size) {
   quick_sort(0, size - 1);
 }
 
@@ -302,8 +301,7 @@ void merge_sort(std::vector<Data*>& temp, int start, int end) {
   }
 }
 
-void merge_sort() {
-  int size = v.size();
+void merge_sort(int size) {
   std::vector<Data*> temp(size);
   merge_sort(temp, 0, size - 1);
 }
@@ -335,12 +333,18 @@ std::string int_to_string(int ssn) {
   return s;
 }
 
-void counting_sort() {
+void counting_sort(int size) {
   int ssn = {};
+  for (int i = 0; i < size; ++i) {
+    ssn = string_to_int(v[i]->ssn);
+    nums[ssn] = true;
+  }
+  /*
   for (auto elem : v) {
     ssn = string_to_int(elem->ssn);
     nums[ssn] = true;
   }
+  */
   int i = 0;
   std::string ssn_str;
   for (int bucket = 0; bucket <= MAX_SSN; ++bucket) {
@@ -440,36 +444,47 @@ int detect_case(const std::list<Data*>& l) {
 
 void sortDataList(std::list<Data*>& l) {
   // Copy list over to a vector
-  v.assign(l.begin(), l.end());
+  ////////////////////////  v.assign(l.begin(), l.end());
+  int size = l.size();
+  int i = 0;
+  for (std::list<Data*>::const_iterator cit = l.begin();
+       cit != l.end(); ++cit) {
+    v[i++] = *cit;
+  }
   switch (detect_case(l)) {
   case 1:
     //    l.sort(less_than);
     //    std::sort(v.begin(), v.end(), less_than);
-    quick_sort();
-    //    merge_sort();
+    ////////////    quick_sort(size);
+    merge_sort(size);
     break;
   case 2:
     //    l.sort(less_than);
     //    std::sort(v.begin(), v.end(), less_than);
-    quick_sort();
-    //    merge_sort();
+    //////////////    quick_sort(size);
+    merge_sort(size);
     break;
   case 3:
     //    l.sort(less_than);
     //    std::sort(v.begin(), v.end(), less_than);
     //    std::stable_sort(v.begin(), v.end(), less_than);
-    //    bubble_sort();
-    insertion_sort();
-    //    quick_sort();
-    //    merge_sort();
+    //    bubble_sort(size);
+    /////////////////insertion_sort(size);
+    //    quick_sort(size);
+    merge_sort(size);
     break;
   case 4:
     //    l.sort(less_than);
     //    std::sort(v.begin(), v.end(), less_than);
-    //    quick_sort();
-    //    merge_sort();
-    counting_sort();
+    //////////    quick_sort(size);
+    //    merge_sort(size);
+    counting_sort(size);
     break;
   }
-  l.assign(v.begin(), v.end());
+  /////////////////  l.assign(v.begin(), v.end());
+  i = 0;
+  for (std::list<Data*>::iterator it = l.begin();
+       it != l.end(); ++it) {
+    *it = v[i++];
+  }
 }
