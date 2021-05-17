@@ -111,18 +111,14 @@ int main() {
 // You may add global variables, functions, and/or
 // class defintions here if you wish.
 
+// Cutoff size for case 1
 const int T1_CUTOFF = 102000;
+// Cutoff size to activate insertion_sort_for_nlogn
 const int INSERTION_SORT_CUTOFF = 20;
-// For counting and lsd radix sort
-const int MAX_SSN = 999999999;
 
 // For all of the array-based sorts
-////////////////std::vector<Data*> v(1020000, NULL);
+/////////////std::vector<Data*> v(1020000, NULL);
 Data* v[1020000] = {NULL};
-
-// For counting sort
-////////////////std::vector<bool> nums(MAX_SSN + 1, false);
-bool nums[MAX_SSN + 1] = {false};
 
 inline void swap(Data*& first, Data*& second);
 void selection_sort(int size);
@@ -137,6 +133,7 @@ void merge_sort(int size);
 int string_to_int(std::string ssn);
 std::string int_to_string(int ssn);
 void counting_sort(int size);
+void lsd_radix_sort(int size);
 bool names_less_or_eq(const Data& d1, const Data& d2);
 bool operator<(const Data& d1, const Data& d2);
 bool less_than(Data* pd1, Data* pd2);
@@ -167,7 +164,6 @@ void selection_sort(int size) {
 }
 
 void bubble_sort(int size) {
-  //  std::cout << size << std::endl;
   bool swapped = false;
   for (int i = 0; i < size - 1; ++i) {
     for (int j = 0; j < size - 1 - i; ++j) {
@@ -229,6 +225,7 @@ void insertion_sort_for_nlogn(int start, int end) {
   }
 }
 
+// For quicksort
 int median_of_three(int start, int end) {
   int mid = (start + end) / 2;
   if (*v[mid] < *v[start]) {
@@ -245,6 +242,7 @@ int median_of_three(int start, int end) {
 
 void quick_sort(int start, int end) {
  beginning:
+  // Use insertion sort if problem is small enough
   if (end - start <= INSERTION_SORT_CUTOFF) {
     insertion_sort_for_nlogn(start, end);
     return;
@@ -274,6 +272,7 @@ void quick_sort(int size) {
 }
 
 void merge_sort(std::vector<Data*>& temp, int start, int end) {
+  // Use insertion sort if problem is small enough
   if (end - start <= INSERTION_SORT_CUTOFF) {
     insertion_sort_for_nlogn(start, end);
     return;
@@ -333,21 +332,23 @@ std::string int_to_string(int ssn) {
   return s;
 }
 
+// For counting and lsd radix sort
+const int MAX_NUM = 999999999;
+
+// For counting sort. Since ssns are unique
+// can only have a max of 1 in a bin. So save
+// space using an array of booleans
+bool nums[MAX_NUM + 1] = {false};
+
 void counting_sort(int size) {
   int ssn = {};
   for (int i = 0; i < size; ++i) {
     ssn = string_to_int(v[i]->ssn);
     nums[ssn] = true;
   }
-  /*
-  for (auto elem : v) {
-    ssn = string_to_int(elem->ssn);
-    nums[ssn] = true;
-  }
-  */
   int i = 0;
   std::string ssn_str;
-  for (int bucket = 0; bucket <= MAX_SSN; ++bucket) {
+  for (int bucket = 0; bucket <= MAX_NUM; ++bucket) {
     if (nums[bucket]) {
       ssn_str = int_to_string(bucket);
       v[i++]->ssn = ssn_str;
@@ -355,7 +356,66 @@ void counting_sort(int size) {
   }
 }
 
-bool names_less_or_eq(const Data& d1, const Data& d2) {
+// For lsd radix sort
+// Sort by groups of SORT_BY_LAST digits
+const int SORT_BY_LAST = 1000;
+// The average bin size will be total number of elements
+// divided by the number os bins. Multiply by 5 in case there
+// is an excess of values in a particular bin
+const int BIN_SIZE = 5 * (1020000 / SORT_BY_LAST);
+// RUNS is the amount of times we extract the least significant
+// groups of digits that have not been extracted so far
+const int RUNS = ceil(log(MAX_NUM) / log(SORT_BY_LAST));
+
+// Holds the integer values of ssns
+int v_int_ssns[1020000] = {0};
+// The temporary 2D array to hold the integers for radix sort
+int radix[BIN_SIZE][SORT_BY_LAST] = {{0}};
+
+void lsd_radix_sort(int size) {
+  // Copy over the ssns as numbers to an auxiliary array
+  for (int i = 0; i < size; ++i) {
+    v_int_ssns[i] = string_to_int(v[i]->ssn);
+  }
+  int ssn = {};
+  int last_digits = {};
+  // Keeps track of how many numbers are in each bin
+  int spot_in_bin[SORT_BY_LAST] = {0};
+  int k = {};
+  for (int runs = 0; runs < RUNS; ++runs) {
+    for (int i = 0; i < size; ++i) {
+      ssn = v_int_ssns[i];
+      // Drop the last set of digits based on the run number
+      // and then strip the remaining last set of digits
+      last_digits = static_cast<int>(ssn / pow(SORT_BY_LAST, runs)) % SORT_BY_LAST;
+      // Insert the number in the correct bin and spot in the bin based on
+      // its last digits and the value of spot_in_bin for that bin. Spot in
+      // bin is incremented for the given bin to hold the next potential number
+      radix[(spot_in_bin[last_digits])++][last_digits] = ssn;
+    }
+    k = 0;
+    for (int i = 0; i < SORT_BY_LAST; ++i) {
+      for (int j = 0; j < spot_in_bin[i]; ++j) {
+	// Read from the radix 2D array back to the array of numerical ssns
+	// after a given pass through all the numbers
+	v_int_ssns[k++] = radix[j][i];
+      }
+    }
+    // Resetting the spot_in_bin for each bin to 0 effectively
+    // "clears" each bin (not truly clearing but acts like it)
+    for (int i = 0; i < SORT_BY_LAST; ++i) {
+      spot_in_bin[i] = 0;
+    }
+  }
+  // Finally rewriting the numerical ssns back to string ssns that
+  // are data members associated with the original array of pointers
+  for (int i = 0; i < size; ++i) {
+    v[i]->ssn = int_to_string(v_int_ssns[i]);
+  }
+}
+
+// Used in the case detection function to check if elements are sorted
+bool name_less_or_eq(const Data& d1, const Data& d2) {
   if (d1.lastName < d2.lastName) {
     return true;
   }
@@ -426,6 +486,7 @@ int detect_case(const std::list<Data*>& l) {
   // Check if the first 20 names are sorted already by names
   cit = l.begin();
   for (int i = 0; i < 20; ++i) {
+    // Check if two names are sorted with respect to each other
     if (!(names_less_or_eq(**cit, **std::next(cit)))) {
       names_sorted = false;
       break;
@@ -455,33 +516,33 @@ void sortDataList(std::list<Data*>& l) {
   case 1:
     //    l.sort(less_than);
     //    std::sort(v.begin(), v.end(), less_than);
-    ////////////    quick_sort(size);
-    merge_sort(size);
+    quick_sort(size);
+    //    merge_sort(size);
     break;
   case 2:
     //    l.sort(less_than);
     //    std::sort(v.begin(), v.end(), less_than);
-    //////////////    quick_sort(size);
-    merge_sort(size);
+    quick_sort(size);
+    //    merge_sort(size);
     break;
   case 3:
     //    l.sort(less_than);
     //    std::sort(v.begin(), v.end(), less_than);
     //    std::stable_sort(v.begin(), v.end(), less_than);
     //    bubble_sort(size);
-    /////////////////insertion_sort(size);
+    insertion_sort(size);
     //    quick_sort(size);
-    merge_sort(size);
+    //    merge_sort(size);
     break;
   case 4:
     //    l.sort(less_than);
     //    std::sort(v.begin(), v.end(), less_than);
-    //////////    quick_sort(size);
+    //    quick_sort(size);
     //    merge_sort(size);
-    counting_sort(size);
+    //    counting_sort(size);
+    lsd_radix_sort(size);
     break;
   }
-  /////////////////  l.assign(v.begin(), v.end());
   i = 0;
   for (std::list<Data*>::iterator it = l.begin();
        it != l.end(); ++it) {
