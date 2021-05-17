@@ -116,7 +116,8 @@ const int INSERTION_SORT_CUTOFF = 20;
 const int MAX_SSN = 999999999;
 
 // For all of the array-based sorts
-std::vector<Data*> v(1020000, NULL);
+//std::vector<Data*> v(1020000, NULL);
+
 // For counting sort
 std::vector<bool> nums(MAX_SSN + 1, false);
 
